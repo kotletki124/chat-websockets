@@ -5,7 +5,7 @@ const WebSocket = require('ws')
 const handleWS = require('./handleWS')
 
 const app = express()
-const server = app.listen(3000)
+const server = app.listen(8000)
 
 const wss = new WebSocket.Server({ noServer: true })
 
