@@ -11,6 +11,12 @@ import type { Ref } from 'vue'
 const { state, sendReadingConfirmation } = useWebSocketStore()
 const observer: Ref<IntersectionObserver | null> = ref(null)
 
+const chatEl: Ref<Element | null> = ref(null)
+
+const isScrolledToBottom = (el: Element) => {
+  return el.scrollHeight - el.clientHeight <= el.scrollTop + 150
+}
+
 watch(
   () => state.activeChat?.interlocutor,
   () => {
@@ -22,19 +28,18 @@ watch(
   () => state.activeChat?.messages.length,
   (newLength) => {
     if (
-      newLength &&
-      newLength > 0 &&
-      state.activeChat?.messages[newLength - 1].sender === state.username
+      (chatEl.value && isScrolledToBottom(chatEl.value)) ||
+      (newLength &&
+        newLength > 0 &&
+        state.activeChat?.messages[newLength - 1].sender === state.username)
     )
       scrollChatDown()
   }
 )
 
 onMounted(() => {
-  const chatEl = document.querySelector('#chat')
-
   let options = {
-    root: chatEl,
+    root: chatEl.value,
     rootMargin: '0px',
     threshold: 0
   }
@@ -55,7 +60,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="chat" class="chat">
+  <div ref="chatEl" id="chat" class="chat">
     <TransitionFade>
       <TransitionList :key="state.activeChat?.interlocutor" class="chat-container">
         <ChatItem
@@ -65,7 +70,7 @@ onMounted(() => {
           :observer="observer"
           :data-msgId="msg.id"
         />
-        <div ref="chatAnchorRef" id="scroll-anchor" class="scroll-anchor" />
+        <div id="scroll-anchor" class="scroll-anchor" />
       </TransitionList>
     </TransitionFade>
   </div>
