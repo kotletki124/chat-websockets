@@ -63,8 +63,7 @@ export const useWebSocketStore = defineStore('wsStore', () => {
 
   const connect = (username: string) => {
     const webSocketDomain = window.location.hostname
-    const webSocketPort = '8000'
-    socket = new WebSocket(`wss://${webSocketDomain}:${webSocketPort}`)
+    socket = new WebSocket(`wss://${webSocketDomain}`)
     socket.onopen = async () => {
       console.log('WebSocket connected', username)
       sendMessage({
